@@ -26,6 +26,88 @@
         { "action": "pause", "ms": 1000 },
         { "action": "screenshot", "output": ".record-prs/signup.png" }
       ]
+    },
+    "e_signature": {
+      "url": "/",
+      "waitFor": "[data-testid='overview-page']",
+      "steps": [
+        {
+          "action": "click",
+          "selector": "[data-testid='nav-sign-document']"
+        },
+        {
+          "action": "wait",
+          "selector": "[data-testid='signature-field']",
+          "timeout": 60000
+        },
+        {
+          "action": "screenshot",
+          "output": ".record-prs/unsigned-document.png"
+        },
+        {
+          "action": "click",
+          "selector": "[data-testid='sign-document']"
+        },
+        {
+          "action": "wait",
+          "selector": "[data-testid='signature-canvas'][data-ready='true']"
+        },
+        {
+          "action": "drag",
+          "from": {
+            "selector": "[data-testid='signature-point-1']"
+          },
+          "to": {
+            "selector": "[data-testid='signature-point-2']"
+          }
+        },
+        {
+          "action": "drag",
+          "from": {
+            "selector": "[data-testid='signature-point-2']"
+          },
+          "to": {
+            "selector": "[data-testid='signature-point-3']"
+          }
+        },
+        {
+          "action": "drag",
+          "from": {
+            "selector": "[data-testid='signature-point-3']"
+          },
+          "to": {
+            "selector": "[data-testid='signature-point-4']"
+          }
+        },
+        {
+          "action": "wait",
+          "selector": "[data-testid='confirm-signature']:not(:disabled)"
+        },
+        {
+          "action": "screenshot",
+          "output": ".record-prs/drawn-signature.png"
+        },
+        {
+          "action": "click",
+          "selector": "[data-testid='confirm-signature']"
+        },
+        {
+          "action": "wait",
+          "selector": "[data-testid='signed-state']"
+        },
+        {
+          "action": "screenshot",
+          "output": ".record-prs/signed-document.png"
+        },
+        {
+          "action": "click",
+          "selector": "[data-testid='export-signed-pdf']"
+        },
+        {
+          "action": "wait",
+          "selector": "[data-testid='signed-pdf-exported']"
+        }
+      ]
     }
   }
 }

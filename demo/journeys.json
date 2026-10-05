@@ -1,4 +1,5 @@
 {
   "navigation": ["demo/src/**", "demo/webreel.config.json", "demo/journeys.json", "demo/package.json", "demo/bun.lock"],
-  "account": ["demo/src/**", "demo/webreel.config.json", "demo/journeys.json", "demo/package.json", "demo/bun.lock"]
+  "account": ["demo/src/**", "demo/webreel.config.json", "demo/journeys.json", "demo/package.json", "demo/bun.lock"],
+  "e_signature": ["demo/src/App.tsx","demo/src/components/app-sidebar.tsx","demo/src/components/sign-document-page.tsx","demo/src/components/blocks/e-signature.tsx","demo/src/components/extend/**","demo/src/lib/pdf-thumbnail-utils.ts","demo/public/documents/**","demo/webreel.config.json","demo/journeys.json","demo/package.json","demo/bun.lock"]
 }
