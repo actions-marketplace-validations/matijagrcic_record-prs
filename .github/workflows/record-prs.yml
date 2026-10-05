@@ -12,11 +12,25 @@ jobs:
     if: >-
       !github.event.pull_request.draft &&
       (github.event.action != 'labeled' || github.event.label.name == 'app: web-ui')
-    uses: matijagrcic/record-prs/.github/workflows/capture.yml@v1.0.5
-    with:
-      working-directory: demo
-      install-command: bun install --frozen-lockfile && bun run build
-      start-command: bun run preview -- --host 127.0.0.1 --port 3000
-      config: webreel.config.json
-      journey-map: journeys.json
-      base-url: http://127.0.0.1:3000
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '24'
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
+        with:
+          bun-version: '1.4.2'
+      # Exercise the action bundled in this PR before publishing a release.
+      - uses: ./
+        with:
+          working-directory: demo
+          install-command: bun install --frozen-lockfile && bun run build
+          start-command: bun run preview -- --host 127.0.0.1 --port 3000
+          config: webreel.config.json
+          base-url: http://127.0.0.1:3000

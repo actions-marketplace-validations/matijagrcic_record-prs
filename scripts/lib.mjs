@@ -1,4 +1,5 @@
 import path from 'node:path';
+import { isDeepStrictEqual } from 'node:util';
 
 export const marker = '<!-- record-prs -->';
 export const mediaPattern = /^record-prs-pr-(\d+)-([a-f0-9]{40})-attempt-(\d+)-(marker\.json|([a-zA-Z0-9_-]+)\.(mp4|png))$/;
@@ -27,6 +28,11 @@ export function selectJourneys(videos, mapping, changed) {
     }
   }
   return names.filter(name => !mapping[name] || changed === null || changed.some(file => mapping[name].some(glob => path.matchesGlob(file, glob))));
+}
+
+export function selectUpdatedJourneys(videos, previousVideos) {
+  return selectJourneys(videos, {}, []).filter(name =>
+    !Object.hasOwn(previousVideos, name) || !isDeepStrictEqual(videos[name], previousVideos[name]));
 }
 
 export function selectArtifacts(artifacts, run) {
@@ -67,7 +73,7 @@ export function markdown(value) {
 }
 
 export function renderComment({sha, conclusion, runUrl, files, media, skipped = false}) {
-  const status = skipped ? 'No configured journeys matched the changed files.' : conclusion === 'success' ? '✅ Capture succeeded' : `❌ Capture ${markdown(conclusion)}`;
+  const status = skipped ? 'No journeys selected for this PR.' : conclusion === 'success' ? '✅ Capture succeeded' : `❌ Capture ${markdown(conclusion)}`;
   const lines = [marker, '### PR recording', '', `${status} for commit \`${sha.slice(0, 7)}\`.`, '', `[Workflow run](${runUrl})`];
   for (const entry of media) {
     lines.push('', `**${markdown(entry.title)}**`, '', entry.url ? (entry.kind === 'png' ? `![${markdown(entry.title)}](${entry.url})` : entry.url) : `[Download ${entry.kind.toUpperCase()}](${entry.artifactUrl})`);

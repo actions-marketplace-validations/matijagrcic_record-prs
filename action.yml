@@ -18,10 +18,10 @@ inputs:
     description: Application URL used for readiness and browser journeys.
     default: http://127.0.0.1:3000
   config:
-    description: Webreel config relative to working-directory.
+    description: Webreel config relative to working-directory. Only new or updated journeys in the PR run by default.
     default: webreel.config.json
   journey-map:
-    description: Optional JSON mapping from journey names to changed-file globs, relative to working-directory.
+    description: Optional legacy override selecting journeys by changed-file globs instead of journey updates, relative to working-directory.
     default: ''
   ready-timeout:
     description: Seconds to wait for the application to respond successfully.
