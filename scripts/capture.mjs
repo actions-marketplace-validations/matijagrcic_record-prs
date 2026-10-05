@@ -3,6 +3,7 @@ import path from 'node:path';
 import { spawn, spawnSync } from 'node:child_process';
 import * as core from '@actions/core';
 import { identity, prefix, selectJourneys } from './lib.mjs';
+import { patchChromeSource } from './webreel-compat.mjs';
 
 const get = (name, fallback = '') => process.env[`INPUT_${name.toUpperCase().replaceAll('-', '_')}`] || fallback;
 const workspace = process.env.GITHUB_WORKSPACE || process.cwd();
@@ -16,11 +17,15 @@ const markerPath = path.join(out, `${prefix(id)}-marker.json`);
 const writeMarker = () => fs.writeFileSync(markerPath, JSON.stringify(state));
 writeMarker();
 
-function command(command, args, cwd = root, env = process.env) {
+function command(command, args, cwd = root, env = process.env, timeoutMs = 600000) {
   return new Promise((resolve, reject) => {
-    const child = spawn(command, args, { cwd, env, stdio: 'inherit' });
-    child.on('error', reject);
-    child.on('exit', code => code === 0 ? resolve() : reject(new Error(`${command} exited with ${code}`)));
+    const child = spawn(command, args, { cwd, env, stdio: 'inherit', detached:true });
+    const timer = setTimeout(() => {
+      try { process.kill(-child.pid, 'SIGKILL'); } catch {}
+      reject(new Error(`${command} exceeded its ${Math.round(timeoutMs / 1000)} second timeout.`));
+    }, timeoutMs);
+    child.on('error', error => {clearTimeout(timer); reject(error)});
+    child.on('exit', code => {clearTimeout(timer); code === 0 ? resolve() : reject(new Error(`${command} exited with ${code}`))});
   });
 }
 const shell = text => command('bash', ['-eo', 'pipefail', '-c', text]);
@@ -47,6 +52,11 @@ try {
     await shell(get('install-command', 'npm ci'));
     const toolDir = path.join(process.env.RUNNER_TEMP || out, 'record-prs-webreel-0.1.4');
     await command('npm', ['install', '--prefix', toolDir, '--no-audit', '--no-fund', 'webreel@0.1.4'], workspace);
+    if (process.platform === 'linux') {
+      const chromeSource = path.join(toolDir, 'node_modules', '@webreel', 'core', 'dist', 'chrome.js');
+      fs.writeFileSync(chromeSource, patchChromeSource(fs.readFileSync(chromeSource, 'utf8')));
+      core.info('Applied the Webreel 0.1.4 Linux frame-control compatibility fix.');
+    }
     const cli = path.join(toolDir, 'node_modules', '.bin', 'webreel');
     // Webreel 0.1.4 downloads Chrome and FFmpeg on first record; its CLI has no install subcommand.
     const baseUrl = get('base-url', 'http://127.0.0.1:3000');
@@ -86,7 +96,7 @@ try {
     const generated = path.join(out, 'webreel.config.json');
     fs.writeFileSync(generated, JSON.stringify(prepared));
     await command(cli, ['validate', '-c', generated], root, env);
-    await command(cli, ['record', '-c', generated], root, env);
+    await command(cli, ['record', '--verbose', '-c', generated], root, env, 300000);
     for (const name of selected) {
       if (!fs.existsSync(path.join(out, `${prefix(id)}-${name}.mp4`))) throw new Error(`Journey ${name} produced no video.`);
     }

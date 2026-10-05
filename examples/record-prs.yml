@@ -12,7 +12,7 @@ jobs:
     if: >-
       !github.event.pull_request.draft &&
       (github.event.action != 'labeled' || github.event.label.name == 'app: web-ui')
-    uses: matijagrcic/record-prs/.github/workflows/capture.yml@v1.0.2
+    uses: matijagrcic/record-prs/.github/workflows/capture.yml@v1.0.3
     with:
       install-command: npm ci
       start-command: npm run dev -- --host 127.0.0.1
