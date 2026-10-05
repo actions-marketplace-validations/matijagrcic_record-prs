@@ -4,9 +4,9 @@ import * as core from '@actions/core';
 import { DefaultArtifactClient } from '@actions/artifact';
 import { mediaPattern } from './lib.mjs';
 try {
-  const dir = process.env.MEDIA_DIRECTORY;
+  const dir = core.getInput('media-directory') || process.env.MEDIA_DIRECTORY;
   if (!dir || !fs.existsSync(dir)) throw new Error('No capture marker directory is available.');
-  const retention = Number(process.env.RETENTION_DAYS || '14');
+  const retention = Number(core.getInput('retention-days') || process.env.RETENTION_DAYS || '14');
   if (!Number.isInteger(retention) || retention < 1 || retention > 90) throw new Error('retention-days must be 1–90.');
   const client = new DefaultArtifactClient();
   const files = fs.readdirSync(dir).filter(name => mediaPattern.test(name));
