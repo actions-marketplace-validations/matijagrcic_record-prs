@@ -18,6 +18,38 @@
         },
         {
           "action": "click",
+          "selector": "[data-testid='nav-projects']"
+        },
+        {
+          "action": "wait",
+          "selector": "[data-testid='projects-page']"
+        },
+        {
+          "action": "pause",
+          "ms": 1000
+        },
+        {
+          "action": "screenshot",
+          "output": ".record-prs/projects.png"
+        },
+        {
+          "action": "click",
+          "selector": "[data-testid='filter-projects']"
+        },
+        {
+          "action": "wait",
+          "selector": "[data-testid='project-count'][data-count='2']"
+        },
+        {
+          "action": "pause",
+          "ms": 1000
+        },
+        {
+          "action": "screenshot",
+          "output": ".record-prs/ready-projects.png"
+        },
+        {
+          "action": "click",
           "selector": "[data-testid='nav-recordings']"
         },
         {
