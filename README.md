@@ -141,9 +141,10 @@ To update an existing completed recording after adding the secret, open its
 
 After **Record PRs** and **Publish PR recordings** complete, open the PR's
 **Conversation** tab and find the **PR recording** comment from
-`github-actions[bot]`. Videos appear as players under their journey names, such
-as **navigation** or **account**; press **▶** to watch. Screenshots appear as
-images. Later commits and reruns update the same comment.
+`github-actions[bot]`. Screenshots appear as images in numeric capture order,
+followed by videos sorted by journey name. Videos appear as players under names
+such as **navigation** or **account**; press **▶** to watch. Later commits and
+reruns update the same comment.
 
 If you still see **Download MP4** / **Download PNG**, open the **Publish PR
 recordings** logs and look for `Attachment upload unavailable`. Check that the

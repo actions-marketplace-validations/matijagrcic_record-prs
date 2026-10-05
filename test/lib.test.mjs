@@ -71,6 +71,26 @@ test('inline MP4s use standalone player URLs and PNGs render as images', () => {
   assert.ok(!comment.includes('expire'));
 });
 
+test('comments order screenshots numerically before videos regardless of artifact order', () => {
+  for (const inline of [true, false]) {
+    const media = [
+      ['png', '04 screenshot'], ['png', '03 screenshot'], ['png', '01 screenshot'],
+      ['png', '02 screenshot'], ['mp4', 'recording_reviews'], ['png', '05 screenshot'],
+      ['png', '10 screenshot'], ['mp4', 'account'],
+    ].map(([kind, title], index) => ({
+      kind, title,
+      ...(inline ? {url:`https://github.com/user-attachments/assets/${index}`} : {artifactUrl:`https://github.com/artifact/${index}`}),
+    }));
+    const original = structuredClone(media);
+    const comment = renderComment({sha,conclusion:'success',runUrl:'https://github.com/run',files:[],media});
+    assert.deepEqual([...comment.matchAll(/^\*\*(.+)\*\*$/gm)].map(match => match[1]), [
+      '01 screenshot', '02 screenshot', '03 screenshot', '04 screenshot',
+      '05 screenshot', '10 screenshot', 'account', 'recording\\_reviews',
+    ]);
+    assert.deepEqual(media, original);
+  }
+});
+
 
 test('skipped label events and cancelled runs cannot block publishing a rerun', () => {
   const current={...run,id:100,conclusion:'success'};

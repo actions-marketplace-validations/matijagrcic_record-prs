@@ -75,7 +75,10 @@ export function markdown(value) {
 export function renderComment({sha, conclusion, runUrl, files, media, skipped = false}) {
   const status = skipped ? 'No journeys selected for this PR.' : conclusion === 'success' ? '✅ Capture succeeded' : `❌ Capture ${markdown(conclusion)}`;
   const lines = [marker, '### PR recording', '', `${status} for commit \`${sha.slice(0, 7)}\`.`, '', `[Workflow run](${runUrl})`];
-  for (const entry of media) {
+  const orderedMedia = [...media].sort((a, b) =>
+    Number(a.kind !== 'png') - Number(b.kind !== 'png') ||
+    a.title.localeCompare(b.title, 'en', {numeric:true}));
+  for (const entry of orderedMedia) {
     lines.push('', `**${markdown(entry.title)}**`, '', entry.url ? (entry.kind === 'png' ? `![${markdown(entry.title)}](${entry.url})` : entry.url) : `[Download ${entry.kind.toUpperCase()}](${entry.artifactUrl})`);
   }
   if (media.some(e => !e.url)) lines.push('', 'Media downloads require GitHub sign-in. Actions artifacts expire according to the configured retention period.');
