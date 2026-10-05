@@ -19,6 +19,6 @@ export function RecordingsPage() {
     <Card><CardHeader className="flex flex-row items-start justify-between gap-4"><div><CardTitle>Demo library</CardTitle><CardDescription className="mt-2">Sample journeys for the workspace. Open a screen to explore it.</CardDescription></div><Button variant={reviewedOnly ? 'default' : 'outline'} onClick={() => setReviewedOnly(!reviewedOnly)} aria-pressed={reviewedOnly} data-testid="filter-reviewed">{reviewedOnly ? 'Show all' : 'Reviewed only'}</Button></CardHeader><CardContent data-testid="recordings-list" className="divide-y">
       {visible.map(item => <div key={item.name} className="flex items-center gap-4 py-5"><div className="flex size-12 shrink-0 items-center justify-center rounded-lg bg-muted"><Film className="size-5"/></div><div className="min-w-0 flex-1"><p className="font-medium">{item.name}</p><p className="mt-1 text-sm text-muted-foreground">{item.detail}</p></div><span className="text-sm tabular-nums text-muted-foreground">{item.duration}</span><Badge variant={item.reviewed ? 'secondary' : 'outline'}>{item.reviewed ? 'Reviewed' : 'Pending'}</Badge><Button variant="ghost" size="icon" asChild><a href={`#${item.route}`} aria-label={`Open ${item.name}`}><ArrowUpRight/></a></Button></div>)}
     </CardContent></Card>
-    <p className="text-sm text-muted-foreground" data-testid="recordings-count">Showing {visible.length} of 3 demo journeys</p>
+    <p className="text-sm text-muted-foreground" data-testid="recordings-count" data-count={visible.length}>Showing {visible.length} of 3 demo journeys</p>
   </div>
 }

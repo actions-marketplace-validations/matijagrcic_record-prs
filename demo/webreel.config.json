@@ -15,7 +15,7 @@
         { "action": "pause", "ms": 1000 },
         { "action": "screenshot", "output": ".record-prs/recordings.png" },
         { "action": "click", "selector": "[data-testid='filter-reviewed']" },
-        { "action": "wait", "text": "Showing 2 of 3 demo journeys" },
+        { "action": "wait", "selector": "[data-testid='recordings-count'][data-count='2']" },
         { "action": "pause", "ms": 1000 },
         { "action": "screenshot", "output": ".record-prs/reviewed.png" }
       ]
