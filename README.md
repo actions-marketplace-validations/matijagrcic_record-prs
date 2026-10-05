@@ -24,7 +24,7 @@ feature's interactions from arbitrary source-code changes.
 jobs:
   record:
     if: '!github.event.pull_request.draft'
-    uses: matijagrcic/record-prs/.github/workflows/capture.yml@v1.0.4
+    uses: matijagrcic/record-prs/.github/workflows/capture.yml@v1.0.5
     with:
       install-command: npm ci
       start-command: npm run dev -- --host 127.0.0.1
@@ -34,7 +34,7 @@ jobs:
 That is the whole capture job. The reusable workflow sets up Node 24 and Bun,
 checks out the exact PR head with read-only permissions, starts the application,
 runs the matching journeys, and uploads each video/screenshot directly without
-a ZIP wrapper. The action also works as `uses: matijagrcic/record-prs@v1.0.4` inside
+a ZIP wrapper. The action also works as `uses: matijagrcic/record-prs@v1.0.5` inside
 your own job; set up Node 24 and check out the PR first.
 
 For Bun use `install-command: bun install --frozen-lockfile`. For pnpm, enable

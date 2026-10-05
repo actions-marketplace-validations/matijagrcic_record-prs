@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
-      - uses: matijagrcic/record-prs/publish@v1.0.4
+      - uses: matijagrcic/record-prs/publish@v1.0.5
         with:
           github-token: ${{ github.token }}
           media-token: ${{ secrets.PR_MEDIA_TOKEN }}

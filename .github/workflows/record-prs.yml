@@ -12,7 +12,7 @@ jobs:
     if: >-
       !github.event.pull_request.draft &&
       (github.event.action != 'labeled' || github.event.label.name == 'app: web-ui')
-    uses: matijagrcic/record-prs/.github/workflows/capture.yml@v1.0.4
+    uses: matijagrcic/record-prs/.github/workflows/capture.yml@v1.0.5
     with:
       working-directory: demo
       install-command: bun install --frozen-lockfile && bun run build
