@@ -73,8 +73,6 @@ Artifacts require GitHub sign-in and expire after 14 days by default.
 ### Enable inline videos and screenshots
 
 `PR_MEDIA_TOKEN` must contain a **GitHub-issued personal access token**.
-It is not an application signing secret: a random value generated with
-`openssl rand -base64 32` will not authenticate to GitHub.
 
 1. Open [GitHub's fine-grained token creation page](https://github.com/settings/personal-access-tokens/new).
    GitHub may ask you to verify your login first.
