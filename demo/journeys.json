@@ -1,0 +1,4 @@
+{
+  "navigation": ["demo/src/**", "demo/webreel.config.json", "demo/journeys.json", "demo/package.json", "demo/bun.lock"],
+  "account": ["demo/src/**", "demo/webreel.config.json", "demo/journeys.json", "demo/package.json", "demo/bun.lock"]
+}

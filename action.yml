@@ -1,0 +1,59 @@
+name: Record PRs
+description: Record configured browser journeys as MP4 and PNG evidence for pull requests.
+author: matijagrcic
+branding:
+  icon: video
+  color: purple
+inputs:
+  install-command:
+    description: Frozen dependency installation command, run inside working-directory.
+    default: npm ci
+  start-command:
+    description: Command to run the application. Leave empty for an existing preview URL.
+    default: npm run dev -- --host 127.0.0.1
+  working-directory:
+    description: Application directory relative to the caller checkout.
+    default: .
+  base-url:
+    description: Application URL used for readiness and browser journeys.
+    default: http://127.0.0.1:3000
+  config:
+    description: Webreel config relative to working-directory.
+    default: webreel.config.json
+  journey-map:
+    description: Optional JSON mapping from journey names to changed-file globs, relative to working-directory.
+    default: ''
+  ready-timeout:
+    description: Seconds to wait for the application to respond successfully.
+    default: '90'
+  retention-days:
+    description: Artifact retention, from 1 to 90 days (subject to repository limits).
+    default: '14'
+outputs:
+  media-directory:
+    description: Captured files on the runner.
+    value: ${{ steps.capture.outputs.media-directory }}
+runs:
+  using: composite
+  steps:
+    - name: Record browser journeys
+      id: capture
+      shell: bash
+      env:
+        INPUT_INSTALL_COMMAND: ${{ inputs.install-command }}
+        INPUT_START_COMMAND: ${{ inputs.start-command }}
+        INPUT_WORKING_DIRECTORY: ${{ inputs.working-directory }}
+        INPUT_BASE_URL: ${{ inputs.base-url }}
+        INPUT_CONFIG: ${{ inputs.config }}
+        INPUT_JOURNEY_MAP: ${{ inputs.journey-map }}
+        INPUT_READY_TIMEOUT: ${{ inputs.ready-timeout }}
+        ACTION_DIRECTORY: ${{ github.action_path }}
+      run: node "$ACTION_DIRECTORY/dist/capture.mjs"
+    - name: Upload direct MP4 and PNG artifacts
+      if: always() && !cancelled()
+      shell: bash
+      env:
+        ACTION_DIRECTORY: ${{ github.action_path }}
+        MEDIA_DIRECTORY: ${{ steps.capture.outputs.media-directory }}
+        RETENTION_DAYS: ${{ inputs.retention-days }}
+      run: node "$ACTION_DIRECTORY/dist/upload.mjs"

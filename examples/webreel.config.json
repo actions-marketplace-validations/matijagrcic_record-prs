@@ -1,0 +1,18 @@
+{
+  "$schema": "https://webreel.dev/schema/v1.json",
+  "viewport": { "width": 1440, "height": 900 },
+  "defaultDelay": 500,
+  "videos": {
+    "feature": {
+      "url": "/feature",
+      "waitFor": "[data-testid='feature-root']",
+      "steps": [
+        { "action": "screenshot", "output": "before.png" },
+        { "action": "click", "selector": "[data-testid='feature-trigger']" },
+        { "action": "wait", "text": "Feature completed", "timeout": 10000 },
+        { "action": "pause", "ms": 1000 },
+        { "action": "screenshot", "output": "after.png" }
+      ]
+    }
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "name": "record-prs",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "test": "node --test test/*.test.mjs",
+    "check": "node --check scripts/capture.mjs && node --check scripts/prepare.mjs && node --check scripts/publish.mjs"
+  },
+  "dependencies": {
+    "@actions/artifact": "6.2.1",
+    "@actions/core": "3.0.0",
+    "@actions/github": "9.0.0",
+    "tslib": "2.8.1"
+  },
+  "devDependencies": {
+    "esbuild": "0.25.12",
+    "webreel": "0.1.4"
+  }
+}

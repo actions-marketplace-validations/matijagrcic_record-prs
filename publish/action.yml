@@ -1,0 +1,21 @@
+name: Publish PR recordings
+description: Validate a completed recording run, maintain one PR comment, and reconcile proof labels.
+inputs:
+  github-token:
+    description: Token with actions read and pull-requests write permissions.
+    required: true
+    default: ${{ github.token }}
+  media-token:
+    description: Optional dedicated bot token for the undocumented GitHub attachment upload endpoint.
+    required: false
+  proof-labels:
+    description: Apply and remove proof labels for the current PR head.
+    default: 'true'
+outputs:
+  pr-number:
+    description: The validated PR number.
+  media-count:
+    description: Number of valid media files published or linked.
+runs:
+  using: node24
+  main: ../dist/publish.mjs
