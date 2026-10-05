@@ -19,6 +19,8 @@ feature's interactions from arbitrary source-code changes.
 4. Customize the capture workflow's install/start commands and application URL.
 5. Merge both workflows into the default branch. Publishing is triggered by
    `workflow_run` and only operates once its workflow exists on that branch.
+6. For videos and screenshots embedded in the PR comment, complete the
+   [inline attachment setup](#pr-comments-and-inline-attachments) in that repository.
 
 ```yaml
 jobs:
@@ -68,17 +70,69 @@ the base branch.
 The default needs only `GITHUB_TOKEN` and links to direct Actions artifacts.
 Artifacts require GitHub sign-in and expire after 14 days by default.
 
-To embed videos and screenshots automatically, add a `PR_MEDIA_TOKEN` Actions
-secret. Use a fine-grained personal access token restricted to the caller
-repository, with **Contents: read and write**, and set an expiration. GitHub
-requires a personal access or OAuth token with push access for attachments;
-`GITHUB_TOKEN` and GitHub App installation tokens cannot upload them. The secret
-is passed only to the trusted publisher, never to the PR capture job.
+### Enable inline videos and screenshots
 
-In the caller repository, open Settings → Secrets and variables → Actions →
-New repository secret, name it `PR_MEDIA_TOKEN`, and paste the token. Both example
-publisher workflows already pass the secret to the action. Rotate it when it
-expires. If it is absent or uploading fails, the comment keeps artifact links.
+`PR_MEDIA_TOKEN` must contain a **GitHub-issued personal access token**.
+It is not an application signing secret: a random value generated with
+`openssl rand -base64 32` will not authenticate to GitHub.
+
+1. Open [GitHub's fine-grained token creation page](https://github.com/settings/personal-access-tokens/new).
+   GitHub may ask you to verify your login first.
+2. Set **Token name**, for example `record-prs inline media`, and choose an
+   **Expiration**, such as 30 days.
+3. Set **Resource owner** to the account or organization that owns the repository
+   where you want PR recordings.
+4. Under **Repository access**, choose **Only select repositories** and select
+   that repository.
+5. Under **Repository permissions**, add **Contents** and set it to
+   **Read and write**. GitHub includes **Metadata: read-only** automatically.
+   No account permissions are needed for this upload token.
+6. Click **Generate token**, confirm the scope, and copy the generated value.
+   If the repository's organization requires approval, obtain that approval
+   before testing uploads.
+7. In the repository where you want recordings, open **Settings → Secrets and
+   variables → Actions → New repository secret**. Enter **Name**:
+   `PR_MEDIA_TOKEN`, paste the token into **Secret**, and click **Add secret**.
+8. Use the example publisher workflow, which already passes the secret:
+
+```yaml
+- uses: matijagrcic/record-prs/publish@v1.0.5
+  with:
+    github-token: ${{ github.token }}
+    media-token: ${{ secrets.PR_MEDIA_TOKEN }}
+```
+
+Repeat this setup for each repository where you install the action: select that
+repository when creating its token and save the secret in that same repository.
+The secret configured in `matijagrcic/record-prs` is only available to workflows
+in `matijagrcic/record-prs`.
+
+The token's owner must have write/push access to the target repository. GitHub
+requires a personal access or OAuth token for attachment uploads;
+`GITHUB_TOKEN` and GitHub App installation tokens cannot upload them. The normal
+`GITHUB_TOKEN` still writes the bot comment. `PR_MEDIA_TOKEN` is passed only to
+the trusted publisher, never to the PR capture job. Keep the token out of source
+files, PR comments, and logs. Before it expires, generate a replacement with the
+same repository scope and update the secret's value.
+
+### Check that it works
+
+Open a non-draft PR with a UI change, or push another commit to an existing PR.
+To update an existing completed recording after adding the secret, open its
+**Record PRs** run under **Actions** and choose **Re-run all jobs**.
+
+After **Record PRs** and **Publish PR recordings** complete, open the PR's
+**Conversation** tab and find the **PR recording** comment from
+`github-actions[bot]`. Videos appear as players under their journey names, such
+as **navigation** or **account**; press **▶** to watch. Screenshots appear as
+images. Later commits and reruns update the same comment.
+
+If you still see **Download MP4** / **Download PNG**, open the **Publish PR
+recordings** logs and look for `Attachment upload unavailable`. Check that the
+secret exists in the caller repository, has not expired, selects that repository,
+and has **Contents: read and write**. A missing token also produces artifact
+links. Keep the publisher workflow on the default branch and preserve its
+`actions: read` and `pull-requests: write` permissions from the example.
 
 The uploader follows the protocol used by the official GitHub CLI attachment
 support. See [GitHub's attachment guide](https://docs.github.com/en/github-cli/github-cli/attaching-files-with-github-cli).
