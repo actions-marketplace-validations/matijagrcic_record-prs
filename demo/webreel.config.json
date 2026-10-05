@@ -2,29 +2,78 @@
   "$schema": "https://webreel.dev/schema/v1.json",
   "outDir": ".record-prs",
   "baseUrl": "http://127.0.0.1:3000",
-  "viewport": { "width": 1440, "height": 900 },
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
   "defaultDelay": 500,
   "videos": {
     "navigation": {
       "url": "/",
       "waitFor": "[data-testid='overview-page']",
       "steps": [
-        { "action": "screenshot", "output": ".record-prs/overview.png" },
-        { "action": "click", "selector": "[data-testid='nav-projects']" },
-        { "action": "wait", "selector": "[data-testid='projects-page']" },
-        { "action": "pause", "ms": 1000 },
-        { "action": "screenshot", "output": ".record-prs/projects.png" }
+        {
+          "action": "screenshot",
+          "output": ".record-prs/overview.png"
+        },
+        {
+          "action": "click",
+          "selector": "[data-testid='nav-projects']"
+        },
+        {
+          "action": "wait",
+          "selector": "[data-testid='projects-page']"
+        },
+        {
+          "action": "pause",
+          "ms": 1000
+        },
+        {
+          "action": "screenshot",
+          "output": ".record-prs/projects.png"
+        }
       ]
     },
     "account": {
       "url": "/#/login",
       "waitFor": "[data-testid='login-page']",
       "steps": [
-        { "action": "screenshot", "output": ".record-prs/login.png" },
-        { "action": "click", "text": "Sign up" },
-        { "action": "wait", "selector": "[data-testid='signup-page']" },
-        { "action": "pause", "ms": 1000 },
-        { "action": "screenshot", "output": ".record-prs/signup.png" }
+        {
+          "action": "screenshot",
+          "output": ".record-prs/login.png"
+        },
+        {
+          "action": "click",
+          "selector": "[data-testid='show-password']"
+        },
+        {
+          "action": "wait",
+          "selector": "[data-testid='login-password'][type='text']"
+        },
+        {
+          "action": "pause",
+          "ms": 1000
+        },
+        {
+          "action": "screenshot",
+          "output": ".record-prs/password-visible.png"
+        },
+        {
+          "action": "click",
+          "text": "Sign up"
+        },
+        {
+          "action": "wait",
+          "selector": "[data-testid='signup-page']"
+        },
+        {
+          "action": "pause",
+          "ms": 1000
+        },
+        {
+          "action": "screenshot",
+          "output": ".record-prs/signup.png"
+        }
       ]
     }
   }

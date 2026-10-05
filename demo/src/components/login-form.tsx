@@ -1,3 +1,4 @@
+import { useState } from "react"
 import { cn } from "cn"
 
 import { Button } from "@/components/ui/button"
@@ -20,6 +21,7 @@ export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
+  const [showPassword, setShowPassword] = useState(false)
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
@@ -51,7 +53,8 @@ export function LoginForm({
                     Forgot your password?
                   </a>
                 </div>
-                <Input id="password" type="password" required />
+                <Input id="password" type={showPassword ? "text" : "password"} required data-testid="login-password" />
+                <Button type="button" variant="outline" data-testid="show-password" aria-pressed={showPassword} onClick={() => setShowPassword(!showPassword)}>{showPassword ? 'Hide password' : 'Show password'}</Button>
               </Field>
               <Field>
                 <Button type="submit">Login</Button>
