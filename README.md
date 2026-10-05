@@ -24,7 +24,7 @@ feature's interactions from arbitrary source-code changes.
 jobs:
   record:
     if: '!github.event.pull_request.draft'
-    uses: matijagrcic/record-prs/.github/workflows/capture.yml@v1
+    uses: matijagrcic/record-prs/.github/workflows/capture.yml@v1.0.2
     with:
       install-command: npm ci
       start-command: npm run dev -- --host 127.0.0.1
@@ -34,7 +34,7 @@ jobs:
 That is the whole capture job. The reusable workflow sets up Node 24 and Bun,
 checks out the exact PR head with read-only permissions, starts the application,
 runs the matching journeys, and uploads each video/screenshot directly without
-a ZIP wrapper. The action also works as `uses: matijagrcic/record-prs@v1` inside
+a ZIP wrapper. The action also works as `uses: matijagrcic/record-prs@v1.0.2` inside
 your own job; set up Node 24 and check out the PR first.
 
 For Bun use `install-command: bun install --frozen-lockfile`. For pnpm, enable
@@ -128,7 +128,7 @@ describe successful media capture, not a guarantee of feature correctness.
 The publisher workflow must listen only to your recording workflow name.
 Dependencies are pinned and the release includes bundled JavaScript, so caller
 repositories don't install the action's dependencies. Pin a release commit SHA
-instead of the moving `v1` tag if your policy requires immutable references.
+instead of the release tag if your policy requires immutable references.
 GitHub.com and Linux runners are supported; GHES is not supported by this version.
 Ubuntu runners install system FFmpeg through apt if it is absent. Other Linux
 runners should provide FFmpeg before calling the action.
