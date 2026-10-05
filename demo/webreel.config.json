@@ -92,6 +92,22 @@
         },
         {
           "action": "click",
+          "selector": "[data-testid='show-password']"
+        },
+        {
+          "action": "wait",
+          "selector": "[data-testid='login-password'][type='text']"
+        },
+        {
+          "action": "pause",
+          "ms": 1000
+        },
+        {
+          "action": "screenshot",
+          "output": ".record-prs/password-visible.png"
+        },
+        {
+          "action": "click",
           "text": "Sign up"
         },
         {
