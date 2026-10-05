@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { identity, prefix, selectJourneys, selectArtifacts, matchesPull, validMedia, renderComment } from '../scripts/lib.mjs';
+import { identity, prefix, selectJourneys, selectArtifacts, matchesPull, validMedia, renderComment, hasNewerRecordingRun } from '../scripts/lib.mjs';
 import { patchChromeSource } from '../scripts/webreel-compat.mjs';
 
 const sha = 'a'.repeat(40);
@@ -69,4 +69,14 @@ test('inline MP4s use standalone player URLs and PNGs render as images', () => {
   assert.ok(comment.includes(`![Projects](${image})`));
   assert.ok(!comment.includes('Download MP4'));
   assert.ok(!comment.includes('expire'));
+});
+
+
+test('skipped label events and cancelled runs cannot block publishing a rerun', () => {
+  const current={...run,id:100,conclusion:'success'};
+  assert.equal(hasNewerRecordingRun([{...current,id:101,conclusion:'skipped'}],current),false);
+  assert.equal(hasNewerRecordingRun([{...current,id:101,conclusion:'cancelled'}],current),false);
+  assert.equal(hasNewerRecordingRun([{...current,id:101,conclusion:'success'}],current),true);
+  assert.equal(hasNewerRecordingRun([{...current,id:101,conclusion:null}],current),true);
+  assert.equal(hasNewerRecordingRun([{...current,id:101,head_branch:'another-pr'}],current),false);
 });

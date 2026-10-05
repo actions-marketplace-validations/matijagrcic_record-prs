@@ -18,11 +18,11 @@
         },
         {
           "action": "click",
-          "selector": "[data-testid='nav-projects']"
+          "selector": "[data-testid='nav-recordings']"
         },
         {
           "action": "wait",
-          "selector": "[data-testid='projects-page']"
+          "selector": "[data-testid='recordings-page']"
         },
         {
           "action": "pause",
@@ -30,7 +30,23 @@
         },
         {
           "action": "screenshot",
-          "output": ".record-prs/projects.png"
+          "output": ".record-prs/recordings.png"
+        },
+        {
+          "action": "click",
+          "selector": "[data-testid='filter-reviewed']"
+        },
+        {
+          "action": "wait",
+          "selector": "[data-testid='recordings-count'][data-count='2']"
+        },
+        {
+          "action": "pause",
+          "ms": 1000
+        },
+        {
+          "action": "screenshot",
+          "output": ".record-prs/reviewed.png"
         }
       ]
     },

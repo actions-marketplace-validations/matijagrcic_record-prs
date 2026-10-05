@@ -4,7 +4,7 @@ import crypto from 'node:crypto';
 import * as core from '@actions/core';
 import { context, getOctokit } from '@actions/github';
 import { DefaultArtifactClient } from '@actions/artifact';
-import { marker, matchesPull, selectArtifacts, validMedia, renderComment } from './lib.mjs';
+import { marker, matchesPull, selectArtifacts, validMedia, renderComment, hasNewerRecordingRun } from './lib.mjs';
 
 async function main() {
   if (context.eventName !== 'workflow_run') throw new Error('Publisher must run in a trusted workflow_run workflow.');
@@ -27,7 +27,7 @@ async function main() {
   if (!matchesPull(pull, freshRun, id)) { core.notice('Ignoring stale or unrelated recording.'); return; }
   // Do not let an older run overwrite a later run for the same PR commit.
   const runs = await github.paginate(github.rest.actions.listWorkflowRuns, {...repoArgs, workflow_id:run.workflow_id, event:'pull_request', head_sha:id.sha, per_page:100});
-  if (runs.some(other => other.id > run.id && other.head_branch === freshRun.head_branch && other.head_repository?.full_name === freshRun.head_repository?.full_name)) {
+  if (hasNewerRecordingRun(runs, freshRun)) {
     core.notice('A newer recording run exists for this commit.'); return;
   }
   const client = new DefaultArtifactClient();
