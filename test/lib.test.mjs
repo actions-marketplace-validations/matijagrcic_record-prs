@@ -60,3 +60,13 @@ test('comment reports artifact fallback and escapes filenames', () => {
   assert.ok(!comment.includes('<img>'));
   assert.ok(!comment.includes('[bad](url)'));
 });
+
+test('inline MP4s use standalone player URLs and PNGs render as images', () => {
+  const video='https://github.com/user-attachments/assets/11111111-1111-1111-1111-111111111111';
+  const image='https://github.com/user-attachments/assets/22222222-2222-2222-2222-222222222222';
+  const comment=renderComment({sha,conclusion:'success',runUrl:'https://github.com/run',files:[],media:[{kind:'mp4',title:'Navigation',url:video},{kind:'png',title:'Projects',url:image}]});
+  assert.ok(comment.includes(`\n\n${video}\n\n`));
+  assert.ok(comment.includes(`![Projects](${image})`));
+  assert.ok(!comment.includes('Download MP4'));
+  assert.ok(!comment.includes('expire'));
+});

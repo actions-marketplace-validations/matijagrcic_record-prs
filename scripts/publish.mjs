@@ -63,8 +63,8 @@ async function main() {
           const mime = entry.kind === 'mp4' ? 'video/mp4' : 'image/png';
           const endpoint = new URL('https://uploads.github.com/user-attachments/assets');
           endpoint.search = new URLSearchParams({name:entry.artifact.name, content_type:mime, repository_id:String(context.payload.repository.id)}).toString();
-          const response = await fetch(endpoint, {method:'POST', redirect:'error', signal:AbortSignal.timeout(180000), headers:{Authorization:`Bearer ${uploadToken}`, Accept:'application/json', 'Content-Type':mime, 'User-Agent':'record-prs'}, body:bytes});
-          if (response.status !== 201) throw new Error(`HTTP ${response.status}`);
+          const response = await fetch(endpoint, {method:'POST', redirect:'error', signal:AbortSignal.timeout(180000), headers:{Authorization:`Bearer ${uploadToken}`, Accept:'application/vnd.github+json', 'Content-Type':'application/octet-stream', 'User-Agent':'record-prs'}, body:bytes});
+          if (!response.ok) throw new Error(`HTTP ${response.status}`);
           const result = await response.json();
           if (!/^https:\/\/github\.com\/user-attachments\/assets\/[a-f0-9-]+$/i.test(result.url || '')) throw new Error('Invalid attachment URL.');
           url = result.url;

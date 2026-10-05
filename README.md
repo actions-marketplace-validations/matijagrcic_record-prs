@@ -24,7 +24,7 @@ feature's interactions from arbitrary source-code changes.
 jobs:
   record:
     if: '!github.event.pull_request.draft'
-    uses: matijagrcic/record-prs/.github/workflows/capture.yml@v1.0.3
+    uses: matijagrcic/record-prs/.github/workflows/capture.yml@v1.0.4
     with:
       install-command: npm ci
       start-command: npm run dev -- --host 127.0.0.1
@@ -34,7 +34,7 @@ jobs:
 That is the whole capture job. The reusable workflow sets up Node 24 and Bun,
 checks out the exact PR head with read-only permissions, starts the application,
 runs the matching journeys, and uploads each video/screenshot directly without
-a ZIP wrapper. The action also works as `uses: matijagrcic/record-prs@v1.0.3` inside
+a ZIP wrapper. The action also works as `uses: matijagrcic/record-prs@v1.0.4` inside
 your own job; set up Node 24 and check out the PR first.
 
 For Bun use `install-command: bun install --frozen-lockfile`. For pnpm, enable
@@ -68,13 +68,23 @@ the base branch.
 The default needs only `GITHUB_TOKEN` and links to direct Actions artifacts.
 Artifacts require GitHub sign-in and expire after 14 days by default.
 
-To embed videos and screenshots in the comment, optionally add a
-`PR_MEDIA_TOKEN` Actions secret from a dedicated bot with push access to that
-repository. It is passed only to the trusted publisher. The
-`uploads.github.com/user-attachments/assets` endpoint is undocumented; failures
-fall back to artifact links. Attachment behavior and access controls are
-controlled by GitHub; do not use it for sensitive captures without independently
-checking your repository's access behavior.
+To embed videos and screenshots automatically, add a `PR_MEDIA_TOKEN` Actions
+secret. Use a fine-grained personal access token restricted to the caller
+repository, with **Contents: read and write**, and set an expiration. GitHub
+requires a personal access or OAuth token with push access for attachments;
+`GITHUB_TOKEN` and GitHub App installation tokens cannot upload them. The secret
+is passed only to the trusted publisher, never to the PR capture job.
+
+In the caller repository, open Settings → Secrets and variables → Actions →
+New repository secret, name it `PR_MEDIA_TOKEN`, and paste the token. Both example
+publisher workflows already pass the secret to the action. Rotate it when it
+expires. If it is absent or uploading fails, the comment keeps artifact links.
+
+The uploader follows the protocol used by the official GitHub CLI attachment
+support. See [GitHub's attachment guide](https://docs.github.com/en/github-cli/github-cli/attaching-files-with-github-cli).
+For public repositories, attachments are public; private attachments follow
+repository access. Inline attachments do not share the Actions artifact
+retention window.
 
 Create the labels once (or set `proof-labels: 'false'` on the publisher action):
 
