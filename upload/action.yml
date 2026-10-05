@@ -1,0 +1,12 @@
+name: Upload PR recording media
+description: Upload each recording as a direct file using the GitHub artifact service.
+inputs:
+  media-directory:
+    description: Runner directory containing PR-numbered recording files.
+    required: true
+  retention-days:
+    description: Artifact retention in days.
+    default: '14'
+runs:
+  using: node24
+  main: ../dist/upload.mjs

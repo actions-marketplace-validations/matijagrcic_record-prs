@@ -130,6 +130,8 @@ Dependencies are pinned and the release includes bundled JavaScript, so caller
 repositories don't install the action's dependencies. Pin a release commit SHA
 instead of the moving `v1` tag if your policy requires immutable references.
 GitHub.com and Linux runners are supported; GHES is not supported by this version.
+Ubuntu runners install system FFmpeg through apt if it is absent. Other Linux
+runners should provide FFmpeg before calling the action.
 
 ## shadcn demo
 

@@ -36,6 +36,17 @@ outputs:
 runs:
   using: composite
   steps:
+    - name: Ensure a system video encoder
+      shell: bash
+      run: |
+        if ! command -v ffmpeg >/dev/null 2>&1; then
+          if [[ "$RUNNER_OS" != "Linux" ]]; then
+            echo 'Install FFmpeg on the runner before calling record-prs.'
+            exit 1
+          fi
+          sudo apt-get update -qq
+          sudo apt-get install -y ffmpeg
+        fi
     - name: Record browser journeys
       id: capture
       shell: bash
@@ -48,12 +59,12 @@ runs:
         INPUT_JOURNEY_MAP: ${{ inputs.journey-map }}
         INPUT_READY_TIMEOUT: ${{ inputs.ready-timeout }}
         ACTION_DIRECTORY: ${{ github.action_path }}
-      run: node "$ACTION_DIRECTORY/dist/capture.mjs"
+      run: |
+        export FFMPEG_PATH="$(command -v ffmpeg)"
+        node "$ACTION_DIRECTORY/dist/capture.mjs"
     - name: Upload direct MP4 and PNG artifacts
       if: always() && !cancelled()
-      shell: bash
-      env:
-        ACTION_DIRECTORY: ${{ github.action_path }}
-        MEDIA_DIRECTORY: ${{ steps.capture.outputs.media-directory }}
-        RETENTION_DAYS: ${{ inputs.retention-days }}
-      run: node "$ACTION_DIRECTORY/dist/upload.mjs"
+      uses: matijagrcic/record-prs/upload@v1
+      with:
+        media-directory: ${{ steps.capture.outputs.media-directory }}
+        retention-days: ${{ inputs.retention-days }}
