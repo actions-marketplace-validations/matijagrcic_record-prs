@@ -1,11 +1,22 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { identity, prefix, selectJourneys, selectArtifacts, matchesPull, validMedia, renderComment } from '../scripts/lib.mjs';
+import { patchChromeSource } from '../scripts/webreel-compat.mjs';
 
 const sha = 'a'.repeat(40);
 const run = {head_sha:sha, run_attempt:2, head_branch:'feature', head_repository:{full_name:'owner/repo'}, pull_requests:[{number:12}]};
 const pull = {number:12,state:'open',head:{sha,ref:'feature',repo:{full_name:'owner/repo'}}};
 const artifact = (file, attempt=2, number=12) => ({id:1,name:`record-prs-pr-${number}-${sha}-attempt-${attempt}-${file}`,expired:false});
+
+test('Linux frame compatibility removes only the two manual-frame flags', () => {
+  const source = 'const args = ["--no-sandbox", "--enable-begin-frame-control", "--run-all-compositor-stages-before-draw", "about:blank"]';
+  const patched = patchChromeSource(source);
+  assert.ok(patched.includes('"--no-sandbox"'));
+  assert.ok(!patched.includes('begin-frame-control'));
+  assert.ok(!patched.includes('compositor-stages-before-draw'));
+  assert.equal(patchChromeSource(patched),patched);
+  assert.throws(() => patchChromeSource('"--enable-begin-frame-control",'));
+});
 
 test('changed-file mapping selects navigation and leaves unmapped journeys enabled', () => {
   assert.deepEqual(selectJourneys({navigation:{},auth:{},always:{}},{navigation:['src/**'],auth:['auth/**']},['src/App.tsx']),['navigation','always']);

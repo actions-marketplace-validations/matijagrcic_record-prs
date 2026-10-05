@@ -64,7 +64,7 @@ runs:
         node "$ACTION_DIRECTORY/dist/capture.mjs"
     - name: Upload direct MP4 and PNG artifacts
       if: always() && !cancelled()
-      uses: matijagrcic/record-prs/upload@v1.0.2
+      uses: matijagrcic/record-prs/upload@v1.0.3
       with:
         media-directory: ${{ steps.capture.outputs.media-directory }}
         retention-days: ${{ inputs.retention-days }}

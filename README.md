@@ -24,7 +24,7 @@ feature's interactions from arbitrary source-code changes.
 jobs:
   record:
     if: '!github.event.pull_request.draft'
-    uses: matijagrcic/record-prs/.github/workflows/capture.yml@v1.0.2
+    uses: matijagrcic/record-prs/.github/workflows/capture.yml@v1.0.3
     with:
       install-command: npm ci
       start-command: npm run dev -- --host 127.0.0.1
@@ -34,7 +34,7 @@ jobs:
 That is the whole capture job. The reusable workflow sets up Node 24 and Bun,
 checks out the exact PR head with read-only permissions, starts the application,
 runs the matching journeys, and uploads each video/screenshot directly without
-a ZIP wrapper. The action also works as `uses: matijagrcic/record-prs@v1.0.2` inside
+a ZIP wrapper. The action also works as `uses: matijagrcic/record-prs@v1.0.3` inside
 your own job; set up Node 24 and check out the PR first.
 
 For Bun use `install-command: bun install --frozen-lockfile`. For pnpm, enable
@@ -132,6 +132,10 @@ instead of the release tag if your policy requires immutable references.
 GitHub.com and Linux runners are supported; GHES is not supported by this version.
 Ubuntu runners install system FFmpeg through apt if it is absent. Other Linux
 runners should provide FFmpeg before calling the action.
+The pinned Webreel 0.1.4 Linux package receives a small compatibility patch that
+removes the two manual-frame Chrome flags described in
+[upstream issue #8](https://github.com/vercel-labs/webreel/issues/8). Commands have
+bounded timeouts; recording has a five-minute limit.
 
 ## shadcn demo
 
