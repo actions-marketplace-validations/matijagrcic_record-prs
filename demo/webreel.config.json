@@ -38,7 +38,7 @@
         },
         {
           "action": "wait",
-          "selector": "[data-testid='project-count'][data-count='1']"
+          "selector": "[data-testid='project-count'][data-count='2']"
         },
         {
           "action": "pause",

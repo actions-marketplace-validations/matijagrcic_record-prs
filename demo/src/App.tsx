@@ -12,7 +12,7 @@ import { TooltipProvider } from '@/components/ui/tooltip'
 
 function Dashboard({projects = false}: {projects?: boolean}) {
   const [reviewedOnly, setReviewedOnly] = useState(false)
-  const projectRows = [{name:'Customer dashboard',detail:'Navigation and account screens',status:'In progress'},{name:'Design system',detail:'Reusable components for every team',status:'Ready for review'},{name:'Developer portal',detail:'Documentation and onboarding',status:'In progress'}]
+  const projectRows = [{name:'Customer dashboard',detail:'Navigation and account screens',status:'Ready for review'},{name:'Design system',detail:'Reusable components for every team',status:'Ready for review'},{name:'Developer portal',detail:'Documentation and onboarding',status:'In progress'}]
   const visibleProjects = projectRows.filter(project => !reviewedOnly || project.status === 'Ready for review')
   return <div className="mx-auto w-full max-w-6xl space-y-8 p-6 lg:p-10" data-testid={projects ? 'projects-page' : 'overview-page'}>
     <div className="flex items-start justify-between"><div><p className="mb-2 text-sm text-muted-foreground">Acme Studio / Workspace</p><h1 className="text-3xl font-semibold tracking-tight">{projects ? 'Projects' : 'Workspace overview'}</h1><p className="mt-2 text-muted-foreground">A clear view of what your team is building.</p></div><Button asChild variant="outline"><a href="#/projects">View projects <ArrowUpRight/></a></Button></div>
