@@ -3,6 +3,7 @@ import { ArrowUpRight, GitPullRequest, FolderKanban, Users, GalleryVerticalEnd }
 import { AppSidebar } from '@/components/app-sidebar'
 import { LoginForm } from '@/components/login-form'
 import { SignupForm } from '@/components/signup-form'
+import { RecordingsPage } from '@/components/recordings-page'
 import { SidebarProvider, SidebarInset, SidebarTrigger } from '@/components/ui/sidebar'
 import { Separator } from '@/components/ui/separator'
 import { Badge } from '@/components/ui/badge'
@@ -33,7 +34,7 @@ export default function App() {
     <p className="text-xs text-muted-foreground">Demo only. No account is created or authenticated.</p>
   </main></TooltipProvider>
   return <TooltipProvider><SidebarProvider><AppSidebar route={route}/><SidebarInset>
-    <header className="flex h-16 shrink-0 items-center gap-3 border-b px-6"><SidebarTrigger data-testid="sidebar-toggle"/><Separator orientation="vertical" className="h-4"/><span className="text-sm text-muted-foreground">Workspace</span><span className="text-sm">/ {route === '/projects' ? 'Projects' : 'Overview'}</span><Badge variant="outline" className="ml-auto">Demo</Badge></header>
-    <Dashboard projects={route === '/projects'}/>
+    <header className="flex h-16 shrink-0 items-center gap-3 border-b px-6"><SidebarTrigger data-testid="sidebar-toggle"/><Separator orientation="vertical" className="h-4"/><span className="text-sm text-muted-foreground">Workspace</span><span className="text-sm">/ {route === '/recordings' ? 'Recordings' : route === '/projects' ? 'Projects' : 'Overview'}</span><Badge variant="outline" className="ml-auto">Demo</Badge></header>
+    {route === '/recordings' ? <RecordingsPage/> : <Dashboard projects={route === '/projects'}/>}
   </SidebarInset></SidebarProvider></TooltipProvider>
 }

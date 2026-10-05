@@ -49,6 +49,13 @@ export function matchesPull(pull, run, id) {
     (!(run.pull_requests?.length) || run.pull_requests.some(p => p.number === pull.number));
 }
 
+export function hasNewerRecordingRun(runs, current) {
+  return runs.some(other => other.id > current.id &&
+    !['cancelled', 'skipped'].includes(other.conclusion) &&
+    other.head_branch === current.head_branch &&
+    other.head_repository?.full_name === current.head_repository?.full_name);
+}
+
 export function validMedia(bytes, kind) {
   if (kind === 'png') return bytes.length > 8 && bytes.subarray(0, 8).equals(Buffer.from([137,80,78,71,13,10,26,10]));
   if (kind === 'mp4') return bytes.length > 12 && bytes.toString('ascii', 4, 8) === 'ftyp';

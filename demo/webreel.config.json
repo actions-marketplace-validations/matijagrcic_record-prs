@@ -47,6 +47,38 @@
         {
           "action": "screenshot",
           "output": ".record-prs/ready-projects.png"
+        },
+        {
+          "action": "click",
+          "selector": "[data-testid='nav-recordings']"
+        },
+        {
+          "action": "wait",
+          "selector": "[data-testid='recordings-page']"
+        },
+        {
+          "action": "pause",
+          "ms": 1000
+        },
+        {
+          "action": "screenshot",
+          "output": ".record-prs/recordings.png"
+        },
+        {
+          "action": "click",
+          "selector": "[data-testid='filter-reviewed']"
+        },
+        {
+          "action": "wait",
+          "selector": "[data-testid='recordings-count'][data-count='2']"
+        },
+        {
+          "action": "pause",
+          "ms": 1000
+        },
+        {
+          "action": "screenshot",
+          "output": ".record-prs/reviewed.png"
         }
       ]
     },
