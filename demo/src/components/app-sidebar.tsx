@@ -1,5 +1,5 @@
 import type * as React from 'react'
-import { GalleryVerticalEnd, LayoutDashboard, FolderKanban, LogIn, UserPlus } from 'lucide-react'
+import { GalleryVerticalEnd, LayoutDashboard, FolderKanban, LogIn, UserPlus, Film } from 'lucide-react'
 import { NavUser } from '@/components/nav-user'
 import { TeamSwitcher } from '@/components/team-switcher'
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarRail, SidebarGroup, SidebarGroupLabel, SidebarMenu, SidebarMenuItem, SidebarMenuButton } from '@/components/ui/sidebar'
@@ -7,6 +7,7 @@ import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarRail, Sid
 const navigation = [
   {title: 'Overview', path: '/', icon: LayoutDashboard, id: 'overview'},
   {title: 'Projects', path: '/projects', icon: FolderKanban, id: 'projects'},
+  {title: 'Recordings', path: '/recordings', icon: Film, id: 'recordings'},
 ]
 
 // Adapted from the official shadcn sidebar-07 block.
