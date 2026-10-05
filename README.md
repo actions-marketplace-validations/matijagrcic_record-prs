@@ -45,10 +45,32 @@ Corepack in the install command and use a frozen install. For a monorepo, set
 Leave `start-command: ''` and provide a ready preview URL to record an existing
 deployment instead of starting the app on the runner.
 
-## Select journeys using changed files
+## Select journeys for a PR
 
-Without a map, every configured journey runs. An optional JSON map selects
-journeys using repository-relative changed-file globs:
+The current source records only journeys added or updated in the PR. It compares
+each entry in the Webreel config's `videos` object with the same entry at the PR's
+merge base. Referenced JSON include steps are part of that comparison. Changes
+to application source files, JSON formatting, or shared recording defaults do
+not select unchanged journeys. Deleted journeys do not run.
+
+Have the agent create or update a journey in the same PR as the UI change. One
+changed journey records one video; several record several. If no journeys
+change, capture skips application installation and recording. The publisher
+updates the PR comment and removes stale proof labels.
+
+Webreel needs the journey's URL, selectors, and browser steps. A file named
+`journeys.json` with source-file patterns is a record-prs option, not a Webreel
+requirement. The demo does not use one. A separate JSON steps file can be
+referenced with `include`; merely adding an unreferenced file does not run it.
+
+This selection behavior is not yet in the published `v1.0.5` release used by
+the installation examples above. The demo workflow uses the action from its
+checkout to test the current source. Release `v1.0.5` records every configured
+journey when no map is supplied. Custom jobs using the current source must
+check out the PR with `fetch-depth: 0`; missing comparison history fails capture.
+
+For compatibility, an explicit `journey-map` still overrides this default and
+selects journeys using repository-relative changed-file globs:
 
 ```json
 {
@@ -58,12 +80,10 @@ journeys using repository-relative changed-file globs:
 ```
 
 Pass its filename with `journey-map: journeys.json`. The keys must match video
-names in your Webreel config. Unmapped journeys always run. A missing Git diff
-records all journeys; zero matching journeys produces an explicit skip comment
-and removes stale proof labels. Update a journey in the feature PR when the
-new feature requires new interactions. This records the PR version of the app;
-screenshots are milestones in that journey, rather than comparisons against
-the base branch.
+names in your Webreel config. Unmapped journeys always run in this legacy mode.
+Do not pass this input if you want selection based only on changed journeys.
+Screenshots show milestones in the PR version of the journey; they are not
+image comparisons against the base branch.
 
 ## PR comments and inline attachments
 
@@ -160,7 +180,7 @@ labels does not trigger another recording.
 | `start-command` | `npm run dev -- --host 127.0.0.1` | App command, or empty for an existing preview |
 | `base-url` | `http://127.0.0.1:3000` | Readiness URL and relative journey URL base |
 | `config` | `webreel.config.json` | Webreel config relative to the app directory |
-| `journey-map` | empty | Optional changed-file selection map |
+| `journey-map` | empty | Legacy override for selection by changed source files |
 | `ready-timeout` | `90` | Readiness timeout in seconds (composite action) |
 | `retention-days` | `14` | Artifact retention, 1–90 days |
 

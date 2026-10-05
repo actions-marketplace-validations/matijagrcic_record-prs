@@ -4,6 +4,7 @@ import { spawn, spawnSync } from 'node:child_process';
 import * as core from '@actions/core';
 import { identity, prefix, selectJourneys } from './lib.mjs';
 import { patchChromeSource } from './webreel-compat.mjs';
+import { expandJourneySteps, selectPullRequestJourneys } from './journeys.mjs';
 
 const get = (name, fallback = '') => process.env[`INPUT_${name.toUpperCase().replaceAll('-', '_')}`] || fallback;
 const workspace = process.env.GITHUB_WORKSPACE || process.cwd();
@@ -34,19 +35,23 @@ let log;
 try {
   const configPath = path.resolve(root, get('config', 'webreel.config.json'));
   const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
-  if (!config.videos || typeof config.videos !== 'object') throw new Error('Webreel config must define videos.');
+  if (!config.videos || typeof config.videos !== 'object' || Array.isArray(config.videos)) throw new Error('Webreel config must define a videos object.');
   const mapPath = get('journey-map');
-  const mapping = mapPath ? JSON.parse(fs.readFileSync(path.resolve(root, mapPath), 'utf8')) : {};
   const event = JSON.parse(fs.readFileSync(process.env.GITHUB_EVENT_PATH, 'utf8'));
-  const diff = spawnSync('git', ['diff', '--name-only', '-z', `${event.pull_request.base.sha}...${id.sha}`], {cwd: workspace, encoding:'utf8'});
-  const changed = diff.status === 0 ? diff.stdout.split('\0').filter(Boolean) : null;
-  if (changed === null) core.warning('Could not read the PR diff; recording all journeys. Use fetch-depth: 0.');
-  const selected = selectJourneys(config.videos, mapping, changed);
+  let selected;
+  if (mapPath) {
+    const mapping = JSON.parse(fs.readFileSync(path.resolve(root, mapPath), 'utf8'));
+    const diff = spawnSync('git', ['diff', '--name-only', '-z', `${event.pull_request.base.sha}...${id.sha}`], {cwd: workspace, encoding:'utf8'});
+    if (diff.status !== 0) throw new Error('Could not read the PR diff. Use fetch-depth: 0.');
+    selected = selectJourneys(config.videos, mapping, diff.stdout.split('\0').filter(Boolean));
+  } else {
+    selected = selectPullRequestJourneys(config, configPath, workspace, event.pull_request.base.sha, id.sha);
+  }
   state.journeys = selected;
   if (!selected.length) {
     state.skipped = true;
     state.success = true;
-    core.notice('No journeys matched the PR changes.');
+    core.notice('No journeys selected for this PR.');
   } else {
     if (selected.length > 8) throw new Error('At most 8 journeys can be recorded per run.');
     await shell(get('install-command', 'npm ci'));
@@ -78,19 +83,11 @@ try {
     if (!ready) throw new Error(`Application was not ready at ${baseUrl}.`);
     const prepared = { ...config, baseUrl, outDir: out, videos: {} };
     let screenshot = 0;
-    function expand(steps, includes = [], depth = 0) {
-      if (depth > 10) throw new Error('Too many nested include files.');
-      const extra = includes.flatMap(file => {
-        const content = JSON.parse(fs.readFileSync(path.resolve(path.dirname(configPath), file), 'utf8'));
-        if (!Array.isArray(content)) throw new Error('Include files must contain a steps array.');
-        return content;
-      });
-      return [...extra, ...steps].map(step => step.action === 'screenshot' ? {...step, output: path.join(out, `${prefix(id)}-${String(++screenshot).padStart(2,'0')}-screenshot.png`)} : step);
-    }
     delete prepared.include;
     for (const name of selected) {
       const video = config.videos[name];
-      prepared.videos[name] = { ...video, baseUrl, output: `${prefix(id)}-${name}.mp4`, thumbnail: {enabled:false}, steps: expand(video.steps || [], [...(config.include || []), ...(video.include || [])]) };
+      const steps = expandJourneySteps(config, video, configPath).map(step => step.action === 'screenshot' ? {...step, output: path.join(out, `${prefix(id)}-${String(++screenshot).padStart(2,'0')}-screenshot.png`)} : step);
+      prepared.videos[name] = { ...video, baseUrl, output: `${prefix(id)}-${name}.mp4`, thumbnail: {enabled:false}, steps };
       delete prepared.videos[name].include;
     }
     const generated = path.join(out, 'webreel.config.json');
