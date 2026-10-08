@@ -26,7 +26,7 @@ feature's interactions from arbitrary source-code changes.
 jobs:
   record:
     if: '!github.event.pull_request.draft'
-    uses: matijagrcic/record-prs/.github/workflows/capture.yml@v1.0.5
+    uses: matijagrcic/record-prs/.github/workflows/capture.yml@v1.1.0
     with:
       install-command: npm ci
       start-command: npm run dev -- --host 127.0.0.1
@@ -36,7 +36,7 @@ jobs:
 That is the whole capture job. The reusable workflow sets up Node 24 and Bun,
 checks out the exact PR head with read-only permissions, starts the application,
 runs the matching journeys, and uploads each video/screenshot directly without
-a ZIP wrapper. The action also works as `uses: matijagrcic/record-prs@v1.0.5` inside
+a ZIP wrapper. The action also works as `uses: matijagrcic/record-prs@v1.1.0` inside
 your own job; set up Node 24 and check out the PR first.
 
 For Bun use `install-command: bun install --frozen-lockfile`. For pnpm, enable
@@ -47,7 +47,7 @@ deployment instead of starting the app on the runner.
 
 ## Select journeys for a PR
 
-The current source records only journeys added or updated in the PR. It compares
+Version `v1.1.0` records only journeys added or updated in the PR. It compares
 each entry in the Webreel config's `videos` object with the same entry at the PR's
 merge base. Referenced JSON include steps are part of that comparison. Changes
 to application source files, JSON formatting, or shared recording defaults do
@@ -63,11 +63,12 @@ Webreel needs the journey's URL, selectors, and browser steps. A file named
 requirement. The demo does not use one. A separate JSON steps file can be
 referenced with `include`; merely adding an unreferenced file does not run it.
 
-This selection behavior is not yet in the published `v1.0.5` release used by
-the installation examples above. The demo workflow uses the action from its
-checkout to test the current source. Release `v1.0.5` records every configured
-journey when no map is supplied. Custom jobs using the current source must
-check out the PR with `fetch-depth: 0`; missing comparison history fails capture.
+When upgrading from `v1.0.5`, add or update a journey in the same PR as each
+frontend change. Release `v1.0.5` records every configured journey when no map
+is supplied; `v1.1.0` records only new or updated journeys by default. Custom
+capture jobs must check out the PR with `fetch-depth: 0`; missing comparison
+history fails capture. The reusable capture workflow includes this setting.
+The demo workflow uses the action from its checkout to test the current source.
 
 For compatibility, an explicit `journey-map` still overrides this default and
 selects journeys using repository-relative changed-file globs:
@@ -114,7 +115,7 @@ Artifacts require GitHub sign-in and expire after 14 days by default.
 8. Use the example publisher workflow, which already passes the secret:
 
 ```yaml
-- uses: matijagrcic/record-prs/publish@v1.0.5
+- uses: matijagrcic/record-prs/publish@v1.1.0
   with:
     github-token: ${{ github.token }}
     media-token: ${{ secrets.PR_MEDIA_TOKEN }}
